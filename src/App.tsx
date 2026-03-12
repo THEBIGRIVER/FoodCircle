@@ -20,7 +20,14 @@ import {
   Clock,
   Map as MapIcon,
   ChevronRight,
-  MoreHorizontal
+  MoreHorizontal,
+  Pizza,
+  Coffee,
+  Soup,
+  Utensils,
+  Apple,
+  Cake,
+  Camera
 } from 'lucide-react';
 import { cn } from './utils';
 import { User, Group, Meal, calculatePrice, FOOD_PREFERENCES, GROUP_SIZES } from './types';
@@ -86,23 +93,25 @@ const Button = ({
   ...props 
 }: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'secondary' | 'outline' | 'ghost' }) => {
   const variants = {
-    primary: 'bg-primary text-white shadow-lg shadow-primary/20 hover:bg-primary/90',
-    secondary: 'bg-secondary text-primary hover:bg-secondary/80',
-    outline: 'border-2 border-primary text-primary hover:bg-primary/5',
-    ghost: 'text-gray-500 hover:bg-gray-100',
+    primary: 'bg-primary text-white shadow-lg shadow-primary/20',
+    secondary: 'bg-secondary text-primary',
+    outline: 'border-2 border-primary text-primary',
+    ghost: 'text-gray-500',
   };
 
   return (
-    <button 
+    <motion.button 
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
       className={cn(
-        'px-6 py-3 rounded-2xl font-semibold transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50',
+        'px-6 py-3 rounded-2xl font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50',
         variants[variant],
         className
       )}
-      {...props}
+      {...props as any}
     >
       {children}
-    </button>
+    </motion.button>
   );
 };
 
@@ -120,6 +129,9 @@ export default function App() {
   const [onboardingStep, setOnboardingStep] = useState(0);
   const [declaredMenu, setDeclaredMenu] = useState('');
   const [isMenuDeclared, setIsMenuDeclared] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [editedUser, setEditedUser] = useState<User>(MOCK_USER);
 
   // Navigation Handler
   const navigate = (newView: typeof view) => {
@@ -129,57 +141,95 @@ export default function App() {
 
   // --- Sub-Views ---
 
-  const LandingPage = () => (
-    <div className="min-h-screen flex flex-col bg-white">
-      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-        <motion.div 
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="mb-12"
-        >
-          <div className="w-24 h-24 bg-primary rounded-3xl flex items-center justify-center shadow-xl shadow-primary/20 mx-auto mb-8">
-            <ChefHat size={48} className="text-white" />
-          </div>
-          <h1 className="text-5xl font-bold tracking-tight text-black mb-4">
-            ChefCircle
-          </h1>
-          <p className="text-xl text-gray-600 max-w-xs mx-auto font-medium">
-            share food share love
-          </p>
-        </motion.div>
+  const LandingPage = () => {
+    const floatingIcons = [
+      { Icon: Pizza, color: "text-orange-400", top: "15%", left: "10%", delay: 0 },
+      { Icon: Coffee, color: "text-brown-400", top: "25%", right: "15%", delay: 0.5 },
+      { Icon: Soup, color: "text-yellow-500", bottom: "30%", left: "15%", delay: 1 },
+      { Icon: Apple, color: "text-red-500", top: "40%", right: "10%", delay: 1.5 },
+      { Icon: Cake, color: "text-pink-400", bottom: "20%", right: "20%", delay: 2 },
+      { Icon: Utensils, color: "text-blue-400", top: "60%", left: "8%", delay: 2.5 },
+    ];
 
-        <div className="w-full max-w-sm space-y-4">
-          <div className="flex items-center gap-4 p-4 bg-surface rounded-2xl">
-            <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
-              <Users className="text-primary" size={24} />
+    return (
+      <div className="min-h-screen flex flex-col bg-white overflow-hidden relative">
+        {/* Floating Animations */}
+        {floatingIcons.map((item, i) => (
+          <motion.div
+            key={i}
+            className={cn("absolute opacity-20", item.color)}
+            style={{ 
+              top: item.top, 
+              left: item.left, 
+              right: item.right, 
+              bottom: item.bottom 
+            }}
+            animate={{
+              y: [0, -20, 0],
+              rotate: [0, 10, -10, 0],
+              scale: [1, 1.1, 1],
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              delay: item.delay,
+              ease: "easeInOut"
+            }}
+          >
+            <item.Icon size={40} />
+          </motion.div>
+        ))}
+
+        <div className="flex-1 flex flex-col items-center justify-center p-8 text-center relative z-10">
+          <motion.div 
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="mb-12"
+          >
+            <div className="w-24 h-24 bg-primary rounded-3xl flex items-center justify-center shadow-xl shadow-primary/20 mx-auto mb-8">
+              <ChefHat size={48} className="text-white" />
             </div>
-            <div className="text-left">
-              <div className="text-sm font-bold">Community Driven</div>
-              <div className="text-xs text-gray-500">1,200+ Active Circles</div>
+            <h1 className="text-5xl font-bold tracking-tight text-black mb-4">
+              ChefCircle
+            </h1>
+            <p className="text-xl text-gray-600 max-w-xs mx-auto font-medium">
+              share food share love
+            </p>
+          </motion.div>
+
+          <div className="w-full max-w-sm space-y-4">
+            <div className="flex items-center gap-4 p-4 bg-surface rounded-2xl">
+              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                <Users className="text-primary" size={24} />
+              </div>
+              <div className="text-left">
+                <div className="text-sm font-bold">Community Driven</div>
+                <div className="text-xs text-gray-500">1,200+ Active Circles</div>
+              </div>
             </div>
-          </div>
-          <div className="flex items-center gap-4 p-4 bg-surface rounded-2xl">
-            <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
-              <Truck className="text-primary" size={24} />
-            </div>
-            <div className="text-left">
-              <div className="text-sm font-bold">Daily Delivery</div>
-              <div className="text-xs text-gray-500">Fresh to your doorstep</div>
+            <div className="flex items-center gap-4 p-4 bg-surface rounded-2xl">
+              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                <Truck className="text-primary" size={24} />
+              </div>
+              <div className="text-left">
+                <div className="text-sm font-bold">Daily Delivery</div>
+                <div className="text-xs text-gray-500">Fresh to your doorstep</div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="p-8 space-y-4">
-        <Button className="w-full py-4 text-lg rounded-xl bg-black hover:bg-gray-900" onClick={() => navigate('onboarding')}>
-          Get Started
-        </Button>
-        <p className="text-center text-sm text-gray-400 font-medium">
-          Eat healthy, support neighbors.
-        </p>
+        <div className="p-8 space-y-4 relative z-10">
+          <Button className="w-full py-4 text-lg rounded-xl bg-black hover:bg-gray-900" onClick={() => navigate('onboarding')}>
+            Get Started
+          </Button>
+          <p className="text-center text-sm text-gray-400 font-medium">
+            Eat healthy, support neighbors.
+          </p>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const Onboarding = () => {
     const steps = [
@@ -275,9 +325,14 @@ export default function App() {
         case 2:
           return (
             <div className="space-y-3">
-              {FOOD_PREFERENCES.map(pref => (
-                <button
+              {FOOD_PREFERENCES.map((pref, i) => (
+                <motion.button
                   key={pref}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
                   onClick={() => setUser({ ...user, foodType: pref })}
                   className={cn(
                     "w-full p-5 rounded-2xl font-bold text-left flex items-center justify-between transition-all",
@@ -286,16 +341,21 @@ export default function App() {
                 >
                   {pref}
                   {user.foodType === pref && <CheckCircle2 size={20} />}
-                </button>
+                </motion.button>
               ))}
             </div>
           );
         case 3:
           return (
             <div className="space-y-3">
-              {GROUP_SIZES.map(size => (
-                <button
+              {GROUP_SIZES.map((size, i) => (
+                <motion.button
                   key={size}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
                   onClick={() => setUser({ ...user, groupSize: size })}
                   className={cn(
                     "w-full p-5 rounded-2xl font-bold text-left flex items-center justify-between transition-all",
@@ -309,7 +369,7 @@ export default function App() {
                     </div>
                   </div>
                   {user.groupSize === size && <CheckCircle2 size={20} />}
-                </button>
+                </motion.button>
               ))}
             </div>
           );
@@ -377,157 +437,235 @@ export default function App() {
   };
 
   const MatchingScreen = () => {
+    const [isMatched, setIsMatched] = useState(false);
+
     useEffect(() => {
-      const timer = setTimeout(() => navigate('dashboard'), 3000);
-      return () => clearTimeout(timer);
+      const matchTimer = setTimeout(() => setIsMatched(true), 2500);
+      const navigateTimer = setTimeout(() => navigate('dashboard'), 4500);
+      return () => {
+        clearTimeout(matchTimer);
+        clearTimeout(navigateTimer);
+      };
     }, []);
 
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-primary text-white text-center">
-        <div className="relative mb-12">
-          <motion.div 
-            animate={{ rotate: 360 }}
-            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-            className="w-48 h-48 border-4 border-dashed border-white/30 rounded-full"
-          />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <Users size={48} className="animate-pulse" />
-          </div>
-          {[...Array(5)].map((_, i) => (
-            <motion.div
-              key={i}
-              initial={{ scale: 0 }}
-              animate={{ scale: [0, 1, 0], x: [0, (i % 2 ? 80 : -80)], y: [0, (i < 2 ? 80 : -80)] }}
-              transition={{ duration: 2, repeat: Infinity, delay: i * 0.4 }}
-              className="absolute top-1/2 left-1/2 w-4 h-4 bg-secondary rounded-full"
-            />
-          ))}
-        </div>
-        <h2 className="text-3xl font-black mb-4">Finding your Circle...</h2>
-        <p className="opacity-80 max-w-xs">Matching you with neighbors in {user.pincode} with {user.foodType} preference.</p>
+        <AnimatePresence mode="wait">
+          {!isMatched ? (
+            <motion.div 
+              key="searching"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.1 }}
+              className="flex flex-col items-center"
+            >
+              <div className="relative mb-12">
+                <motion.div 
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                  className="w-48 h-48 border-4 border-dashed border-white/30 rounded-full"
+                />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Users size={48} className="animate-pulse" />
+                </div>
+                {[...Array(5)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ scale: 0 }}
+                    animate={{ scale: [0, 1, 0], x: [0, (i % 2 ? 80 : -80)], y: [0, (i < 2 ? 80 : -80)] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: i * 0.4 }}
+                    className="absolute top-1/2 left-1/2 w-4 h-4 bg-secondary rounded-full"
+                  />
+                ))}
+              </div>
+              <h2 className="text-3xl font-black mb-4">Finding your Circle...</h2>
+              <p className="opacity-80 max-w-xs">Matching you with neighbors in {user.pincode} with {user.foodType} preference.</p>
+            </motion.div>
+          ) : (
+            <motion.div 
+              key="matched"
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex flex-col items-center"
+            >
+              <motion.div 
+                initial={{ scale: 0 }}
+                animate={{ scale: [0, 1.2, 1] }}
+                transition={{ duration: 0.5 }}
+                className="w-32 h-32 bg-white rounded-full flex items-center justify-center mb-8 shadow-2xl"
+              >
+                <CheckCircle2 size={64} className="text-primary" />
+              </motion.div>
+              <h2 className="text-4xl font-black mb-2">Matched!</h2>
+              <p className="text-xl opacity-90">Welcome to Circle #402</p>
+              <div className="mt-8 flex -space-x-4">
+                {[1, 2, 3, 4].map(i => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.1 }}
+                    className="w-12 h-12 rounded-full border-4 border-primary bg-gray-200 overflow-hidden"
+                  >
+                    <img src={`https://i.pravatar.cc/150?u=${i}`} alt="Member" referrerPolicy="no-referrer" />
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     );
   };
 
-  const Dashboard = () => (
-    <div className="min-h-screen pb-32 bg-white">
-      {/* Header */}
-      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md px-6 py-4 border-b border-gray-100">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <MapPin size={18} className="text-primary" />
-            <span className="font-bold text-sm">{user.pincode} • Now</span>
-            <ChevronRight size={16} className="text-gray-400" />
+  const Dashboard = () => {
+    const filteredDishes = MOCK_DISHES.filter(dish => 
+      dish.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      dish.category.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    return (
+      <div className="min-h-screen pb-32 bg-white">
+        {/* Header */}
+        <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md px-6 py-4 border-b border-gray-100">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <MapPin size={18} className="text-primary" />
+              <span className="font-bold text-sm">{user.pincode} • Now</span>
+              <ChevronRight size={16} className="text-gray-400" />
+            </div>
+            <button onClick={() => navigate('schedule')} className="w-10 h-10 bg-surface rounded-full flex items-center justify-center text-primary">
+              <Calendar size={20} />
+            </button>
           </div>
-          <button className="w-10 h-10 bg-surface rounded-full flex items-center justify-center">
-            <ShoppingBag size={20} />
-          </button>
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <input 
+              type="text" 
+              placeholder="Search for dishes or circles" 
+              className="w-full pl-12 pr-4 py-3 bg-surface rounded-full text-sm font-medium focus:outline-none"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
         </div>
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-          <input 
-            type="text" 
-            placeholder="Search for dishes or circles" 
-            className="w-full pl-12 pr-4 py-3 bg-surface rounded-full text-sm font-medium focus:outline-none"
-          />
-        </div>
-      </div>
 
-      {/* Categories */}
-      <div className="flex gap-4 overflow-x-auto px-6 py-6 no-scrollbar">
-        {['All', 'Healthy', 'Sweets', 'Main', 'Breakfast', 'Vegan'].map((cat) => (
-          <button 
-            key={cat}
-            className={cn(
-              "px-6 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all",
-              cat === 'All' ? "bg-black text-white" : "bg-surface text-gray-600 hover:bg-gray-200"
-            )}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-
-      {/* Featured Dishes */}
-      <div className="px-6 space-y-8">
-        <div className="space-y-6">
-          {MOCK_DISHES.map((dish) => (
-            <motion.div
-              key={dish.id}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => navigate('delivery')}
-              className="space-y-3 cursor-pointer group"
+        {/* Categories */}
+        <div className="flex gap-4 overflow-x-auto px-6 py-6 no-scrollbar">
+          {['All', 'Healthy', 'Sweets', 'Main', 'Breakfast', 'Vegan'].map((cat) => (
+            <button 
+              key={cat}
+              onClick={() => setSearchQuery(cat === 'All' ? '' : cat)}
+              className={cn(
+                "px-6 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all",
+                (searchQuery === cat || (cat === 'All' && searchQuery === '')) ? "bg-black text-white" : "bg-surface text-gray-600 hover:bg-gray-200"
+              )}
             >
-              <div className="relative aspect-[16/9] rounded-2xl overflow-hidden shadow-sm">
-                <img 
-                  src={dish.image} 
-                  alt={dish.name} 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                  referrerPolicy="no-referrer" 
-                />
-                <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">
-                  {dish.time}
-                </div>
-                <button className="absolute bottom-4 right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg text-primary">
-                  <Plus size={20} />
-                </button>
-              </div>
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="text-lg font-bold text-black">{dish.name}</h3>
-                  <div className="flex items-center gap-2 text-sm text-gray-500 font-medium">
-                    <span className="text-black font-bold">★ {dish.rating}</span>
-                    <span>•</span>
-                    <span>{dish.category}</span>
-                    <span>•</span>
-                    <span className="text-primary font-bold">{dish.price}</span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+              {cat}
+            </button>
           ))}
         </div>
 
-        {/* My Circle Section */}
-        <div className="pt-4 pb-8">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold">Your Circle</h3>
-            <button className="text-primary font-bold text-sm">View All</button>
+        {/* Featured Dishes */}
+        <div className="px-6 space-y-8">
+          <div className="space-y-6">
+            <AnimatePresence mode="popLayout">
+              {filteredDishes.length > 0 ? filteredDishes.map((dish, i) => (
+                <motion.div
+                  key={dish.id}
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ delay: i * 0.05 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => navigate('delivery')}
+                  className="space-y-3 cursor-pointer group"
+                >
+                  <div className="relative aspect-[16/9] rounded-2xl overflow-hidden shadow-sm">
+                    <img 
+                      src={dish.image} 
+                      alt={dish.name} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                      referrerPolicy="no-referrer" 
+                    />
+                    <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">
+                      {dish.time}
+                    </div>
+                    <button className="absolute bottom-4 right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg text-primary">
+                      <Plus size={20} />
+                    </button>
+                  </div>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="text-lg font-bold text-black">{dish.name}</h3>
+                      <div className="flex items-center gap-2 text-sm text-gray-500 font-medium">
+                        <span className="text-black font-bold">★ {dish.rating}</span>
+                        <span>•</span>
+                        <span>{dish.category}</span>
+                        <span>•</span>
+                        <span className="text-primary font-bold">{dish.price}</span>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )) : (
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="py-20 text-center"
+                >
+                  <div className="w-20 h-20 bg-surface rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Search size={32} className="text-gray-300" />
+                  </div>
+                  <h3 className="text-lg font-bold">No results found</h3>
+                  <p className="text-sm text-gray-500">Try searching for something else</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
-          <Card className="bg-surface border-none p-4 flex items-center gap-4">
-            <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm">
-              <Users className="text-primary" size={32} />
+
+          {/* My Circle Section */}
+          <div className="pt-4 pb-8">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold">Your Circle</h3>
+              <button className="text-primary font-bold text-sm">View All</button>
             </div>
-            <div className="flex-1">
-              <div className="font-bold">Circle #829</div>
-              <div className="text-sm text-gray-500">7 Members • Next turn in 3 days</div>
-            </div>
-            <ChevronRight className="text-gray-300" />
-          </Card>
+            <Card className="bg-surface border-none p-4 flex items-center gap-4">
+              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm">
+                <Users className="text-primary" size={32} />
+              </div>
+              <div className="flex-1">
+                <div className="font-bold">Circle #829</div>
+                <div className="text-sm text-gray-500">7 Members • Next turn in 3 days</div>
+              </div>
+              <ChevronRight className="text-gray-300" />
+            </Card>
+          </div>
+        </div>
+
+        {/* Bottom Nav */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-4 flex items-center justify-around z-50">
+          <button onClick={() => navigate('dashboard')} className={cn("flex flex-col items-center gap-1", view === 'dashboard' ? "text-black" : "text-gray-400")}>
+            <Home size={24} />
+            <span className="text-[10px] font-bold">Home</span>
+          </button>
+          <button onClick={() => { setSearchQuery(''); navigate('dashboard'); }} className="flex flex-col items-center gap-1 text-gray-400">
+            <Search size={24} />
+            <span className="text-[10px] font-bold">Search</span>
+          </button>
+          <button onClick={() => navigate('schedule')} className={cn("flex flex-col items-center gap-1", view === 'schedule' ? "text-black" : "text-gray-400")}>
+            <Calendar size={24} />
+            <span className="text-[10px] font-bold">Schedule</span>
+          </button>
+          <button onClick={() => navigate('profile')} className={cn("flex flex-col items-center gap-1", view === 'profile' ? "text-black" : "text-gray-400")}>
+            <UserIcon size={24} />
+            <span className="text-[10px] font-bold">Account</span>
+          </button>
         </div>
       </div>
-
-      {/* Bottom Nav */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-4 flex items-center justify-around z-50">
-        <button onClick={() => navigate('dashboard')} className={cn("flex flex-col items-center gap-1", view === 'dashboard' ? "text-black" : "text-gray-400")}>
-          <Home size={24} />
-          <span className="text-[10px] font-bold">Home</span>
-        </button>
-        <button className="flex flex-col items-center gap-1 text-gray-400">
-          <Search size={24} />
-          <span className="text-[10px] font-bold">Search</span>
-        </button>
-        <button onClick={() => navigate('schedule')} className={cn("flex flex-col items-center gap-1", view === 'schedule' ? "text-black" : "text-gray-400")}>
-          <Calendar size={24} />
-          <span className="text-[10px] font-bold">Schedule</span>
-        </button>
-        <button onClick={() => navigate('profile')} className={cn("flex flex-col items-center gap-1", view === 'profile' ? "text-black" : "text-gray-400")}>
-          <UserIcon size={24} />
-          <span className="text-[10px] font-bold">Account</span>
-        </button>
-      </div>
-    </div>
-  );
+    );
+  };
 
   const DeliveryTracking = () => (
     <div className="min-h-screen bg-white pb-12">
@@ -536,7 +674,12 @@ export default function App() {
         <div className="absolute inset-0 bg-[url('https://picsum.photos/seed/map/800/600')] bg-cover bg-center opacity-40 grayscale" />
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="relative">
-            <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-lg animate-bounce">
+            <motion.div 
+              animate={{ scale: [1, 2, 1], opacity: [0.3, 0, 0.3] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="absolute inset-0 bg-primary rounded-full"
+            />
+            <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-lg relative z-10">
               <MapPin size={24} className="text-white" />
             </div>
             <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-primary/20 rounded-full blur-sm" />
@@ -618,49 +761,90 @@ export default function App() {
 
   const RatingScreen = () => {
     const [ratings, setRatings] = useState({ taste: 0, hygiene: 0, portion: 0 });
+    const [isSubmitted, setIsSubmitted] = useState(false);
+
+    const handleSubmit = () => {
+      setIsSubmitted(true);
+      setTimeout(() => navigate('dashboard'), 2000);
+    };
 
     return (
       <div className="min-h-screen bg-white p-6 flex flex-col">
-        <div className="flex-1 space-y-12 pt-8">
-          <div className="text-center space-y-4">
-            <div className="w-20 h-20 bg-secondary rounded-3xl flex items-center justify-center text-primary mx-auto">
-              <Star size={40} fill="currentColor" />
-            </div>
-            <h2 className="text-3xl font-bold">Rate the meal</h2>
-            <p className="text-gray-500 font-medium">How was the food from Circle #829?</p>
-          </div>
+        <AnimatePresence mode="wait">
+          {!isSubmitted ? (
+            <motion.div 
+              key="rating-form"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="flex-1 flex flex-col"
+            >
+              <div className="flex-1 space-y-12 pt-8">
+                <div className="text-center space-y-4">
+                  <div className="w-20 h-20 bg-secondary rounded-3xl flex items-center justify-center text-primary mx-auto">
+                    <Star size={40} fill="currentColor" />
+                  </div>
+                  <h2 className="text-3xl font-bold">Rate the meal</h2>
+                  <p className="text-gray-500 font-medium">How was the food from Circle #829?</p>
+                </div>
 
-          <div className="space-y-10">
-            {['taste', 'hygiene', 'portion'].map((category) => (
-              <div key={category} className="space-y-4">
-                <div className="text-xs font-bold uppercase tracking-widest text-gray-400 text-center">{category}</div>
-                <div className="flex justify-center gap-3">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button 
-                      key={star}
-                      onClick={() => setRatings({ ...ratings, [category]: star })}
-                      className="transition-transform active:scale-90"
-                    >
-                      <Star 
-                        size={36} 
-                        className={cn(
-                          "transition-all",
-                          ratings[category as keyof typeof ratings] >= star ? "text-primary fill-primary" : "text-gray-100"
-                        )} 
-                      />
-                    </button>
+                <div className="space-y-10">
+                  {['taste', 'hygiene', 'portion'].map((category) => (
+                    <div key={category} className="space-y-4">
+                      <div className="text-xs font-bold uppercase tracking-widest text-gray-400 text-center">{category}</div>
+                      <div className="flex justify-center gap-3">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <button 
+                            key={star}
+                            onClick={() => setRatings({ ...ratings, [category]: star })}
+                            className="transition-transform active:scale-90"
+                          >
+                            <Star 
+                              size={36} 
+                              className={cn(
+                                "transition-all",
+                                ratings[category as keyof typeof ratings] >= star ? "text-primary fill-primary" : "text-gray-100"
+                              )} 
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
 
-        <div className="pb-8">
-          <Button className="w-full py-4 text-lg bg-black hover:bg-gray-900 rounded-xl" onClick={() => navigate('dashboard')}>
-            Submit Feedback
-          </Button>
-        </div>
+              <div className="pb-8">
+                <Button 
+                  className="w-full py-4 text-lg bg-black hover:bg-gray-900 rounded-xl" 
+                  onClick={handleSubmit}
+                  disabled={!ratings.taste || !ratings.hygiene || !ratings.portion}
+                >
+                  Submit Feedback
+                </Button>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div 
+              key="success"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex-1 flex flex-col items-center justify-center text-center space-y-6"
+            >
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: [0, 1.2, 1] }}
+                className="w-24 h-24 bg-primary rounded-full flex items-center justify-center shadow-xl shadow-primary/20"
+              >
+                <CheckCircle2 size={48} className="text-white" />
+              </motion.div>
+              <div className="space-y-2">
+                <h2 className="text-3xl font-bold">Thank You!</h2>
+                <p className="text-gray-500 font-medium">Your feedback helps the circle grow.</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     );
   };
@@ -721,13 +905,13 @@ export default function App() {
   const ScheduleScreen = () => {
     const [selectedDay, setSelectedDay] = useState(new Date().getDate());
     const weekDays = [
-      { day: 'Mon', date: 10 },
-      { day: 'Tue', date: 11 },
-      { day: 'Wed', date: 12 },
-      { day: 'Thu', date: 13 },
-      { day: 'Fri', date: 14 },
-      { day: 'Sat', date: 15 },
-      { day: 'Sun', date: 16 },
+      { day: 'Mon', date: 10, hasTurn: false },
+      { day: 'Tue', date: 11, hasTurn: false },
+      { day: 'Wed', date: 12, hasTurn: true },
+      { day: 'Thu', date: 13, hasTurn: false },
+      { day: 'Fri', date: 14, hasTurn: true },
+      { day: 'Sat', date: 15, hasTurn: false },
+      { day: 'Sun', date: 16, hasTurn: false },
     ];
 
     return (
@@ -735,7 +919,10 @@ export default function App() {
         {/* Calendar Header */}
         <div className="px-6 pt-8 pb-6 border-b border-gray-100">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold">March 2026</h2>
+            <div>
+              <h2 className="text-2xl font-bold">March 2026</h2>
+              <p className="text-xs text-gray-400 font-bold uppercase mt-1">Your next turn: Wed, 12th</p>
+            </div>
             <div className="flex gap-2">
               <button className="w-10 h-10 bg-surface rounded-full flex items-center justify-center">
                 <Search size={20} />
@@ -752,12 +939,18 @@ export default function App() {
                 key={d.date}
                 onClick={() => setSelectedDay(d.date)}
                 className={cn(
-                  "flex flex-col items-center gap-2 p-2 rounded-2xl transition-all w-12",
+                  "flex flex-col items-center gap-2 p-2 rounded-2xl transition-all w-12 relative",
                   selectedDay === d.date ? "bg-black text-white shadow-lg" : "text-gray-400 hover:bg-gray-50"
                 )}
               >
                 <span className="text-[10px] font-bold uppercase">{d.day}</span>
                 <span className="text-lg font-bold">{d.date}</span>
+                {d.hasTurn && (
+                  <div className={cn(
+                    "absolute -bottom-1 w-1 h-1 rounded-full",
+                    selectedDay === d.date ? "bg-white" : "bg-primary"
+                  )} />
+                )}
               </button>
             ))}
           </div>
@@ -801,6 +994,10 @@ export default function App() {
                   <Clock size={14} className="text-gray-400" />
                 </div>
                 <div className="text-xs text-gray-600">Prepare Dinner for Circle #829</div>
+                <div className="mt-4 flex items-center gap-2 text-[10px] font-bold text-primary uppercase">
+                  <ChefHat size={12} />
+                  <span>7 Portions Required</span>
+                </div>
               </Card>
             </div>
           </div>
@@ -808,11 +1005,11 @@ export default function App() {
 
         {/* Bottom Nav */}
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-4 flex items-center justify-around z-50">
-          <button onClick={() => navigate('dashboard')} className="flex flex-col items-center gap-1 text-gray-400">
+          <button onClick={() => navigate('dashboard')} className={cn("flex flex-col items-center gap-1", view === 'dashboard' ? "text-black" : "text-gray-400")}>
             <Home size={24} />
             <span className="text-[10px] font-bold">Home</span>
           </button>
-          <button className="flex flex-col items-center gap-1 text-gray-400">
+          <button onClick={() => { setSearchQuery(''); navigate('dashboard'); }} className="flex flex-col items-center gap-1 text-gray-400">
             <Search size={24} />
             <span className="text-[10px] font-bold">Search</span>
           </button>
@@ -829,139 +1026,186 @@ export default function App() {
     );
   };
 
-  const ProfileScreen = () => (
-    <div className="min-h-screen bg-white pb-32">
-      <div className="p-6 space-y-8">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold">Account</h2>
-          <button className="w-10 h-10 bg-surface rounded-full flex items-center justify-center">
-            <Settings size={20} />
-          </button>
-        </div>
+  const ProfileScreen = () => {
+    const handleSave = () => {
+      setUser(editedUser);
+      setIsEditingProfile(false);
+    };
 
-        <div className="flex items-center gap-4 pb-8 border-b border-gray-100">
-          <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-gray-100 shadow-sm">
-            <img src="https://picsum.photos/seed/john/200" alt="Profile" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold text-black">{user.name}</h2>
-            <p className="text-sm text-gray-500 font-medium">Circle #829 • {user.pincode}</p>
-            <button className="text-primary text-sm font-bold mt-1">Edit Profile</button>
-          </div>
-        </div>
+    const handleCancel = () => {
+      setEditedUser(user);
+      setIsEditingProfile(false);
+    };
 
-        <div className="grid grid-cols-3 gap-4">
-          <div className="text-center p-4 bg-surface rounded-2xl">
-            <div className="text-xl font-bold">12</div>
-            <div className="text-[10px] font-bold uppercase text-gray-400">Meals</div>
+    return (
+      <div className="min-h-screen bg-white pb-32">
+        <div className="p-6 space-y-8">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold">{isEditingProfile ? 'Edit Profile' : 'Account'}</h2>
+            {!isEditingProfile && (
+              <button className="w-10 h-10 bg-surface rounded-full flex items-center justify-center">
+                <Settings size={20} />
+              </button>
+            )}
           </div>
-          <div className="text-center p-4 bg-surface rounded-2xl">
-            <div className="text-xl font-bold">4.8</div>
-            <div className="text-[10px] font-bold uppercase text-gray-400">Rating</div>
-          </div>
-          <div className="text-center p-4 bg-surface rounded-2xl">
-            <div className="text-xl font-bold">0</div>
-            <div className="text-[10px] font-bold uppercase text-gray-400">Missed</div>
-          </div>
-        </div>
 
-        <div className="space-y-2">
-          {[
-            { icon: <Users size={20} />, label: 'Circle Settings', value: '7 Members' },
-            { icon: <ChefHat size={20} />, label: 'Dietary Preference', value: user.foodType },
-            { icon: <Truck size={20} />, label: 'Subscription', value: 'Active' },
-            { icon: <MapIcon size={20} />, label: 'Saved Addresses', value: 'Home' },
-          ].map((item, i) => (
-            <button key={i} className="w-full py-4 flex items-center justify-between group border-b border-gray-50 last:border-0">
-              <div className="flex items-center gap-4">
-                <div className="text-gray-400 group-hover:text-black transition-colors">
-                  {item.icon}
+          {isEditingProfile ? (
+            <div className="space-y-6">
+              <div className="flex flex-col items-center gap-4">
+                <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-surface shadow-md relative group">
+                  <img src="https://picsum.photos/seed/john/200" alt="Profile" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                    <Camera className="text-white" size={24} />
+                  </div>
                 </div>
-                <div className="text-left">
-                  <div className="text-sm font-bold text-black">{item.label}</div>
-                  <div className="text-xs text-gray-400 font-medium">{item.value}</div>
+                <p className="text-xs text-gray-400 font-bold uppercase">Change Photo</p>
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-gray-400 uppercase ml-2">Full Name</label>
+                  <input 
+                    type="text" 
+                    className="w-full p-4 bg-surface rounded-2xl font-bold focus:ring-2 focus:ring-primary outline-none"
+                    value={editedUser.name}
+                    onChange={(e) => setEditedUser({ ...editedUser, name: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-gray-400 uppercase ml-2">Pincode</label>
+                  <input 
+                    type="text" 
+                    className="w-full p-4 bg-surface rounded-2xl font-bold focus:ring-2 focus:ring-primary outline-none"
+                    value={editedUser.pincode}
+                    onChange={(e) => setEditedUser({ ...editedUser, pincode: e.target.value.slice(0, 6) })}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-gray-400 uppercase ml-2">Food Preference</label>
+                  <select 
+                    className="w-full p-4 bg-surface rounded-2xl font-bold focus:ring-2 focus:ring-primary outline-none appearance-none"
+                    value={editedUser.foodType}
+                    onChange={(e) => setEditedUser({ ...editedUser, foodType: e.target.value })}
+                  >
+                    {FOOD_PREFERENCES.map(pref => <option key={pref} value={pref}>{pref}</option>)}
+                  </select>
                 </div>
               </div>
-              <ChevronRight size={18} className="text-gray-300" />
-            </button>
-          ))}
+
+              <div className="flex gap-4 pt-4">
+                <Button variant="outline" className="flex-1 py-4" onClick={handleCancel}>Cancel</Button>
+                <Button className="flex-1 py-4" onClick={handleSave}>Save Changes</Button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="flex items-center gap-4 pb-8 border-b border-gray-100">
+                <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-gray-100 shadow-sm">
+                  <img src="https://picsum.photos/seed/john/200" alt="Profile" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-black">{user.name}</h2>
+                  <p className="text-sm text-gray-500 font-medium">Circle #829 • {user.pincode}</p>
+                  <button 
+                    onClick={() => {
+                      setEditedUser(user);
+                      setIsEditingProfile(true);
+                    }}
+                    className="text-primary text-sm font-bold mt-1"
+                  >
+                    Edit Profile
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div className="text-center p-4 bg-surface rounded-2xl">
+                  <div className="text-xl font-bold">12</div>
+                  <div className="text-[10px] font-bold uppercase text-gray-400">Meals</div>
+                </div>
+                <div className="text-center p-4 bg-surface rounded-2xl">
+                  <div className="text-xl font-bold">4.8</div>
+                  <div className="text-[10px] font-bold uppercase text-gray-400">Rating</div>
+                </div>
+                <div className="text-center p-4 bg-surface rounded-2xl">
+                  <div className="text-xl font-bold">0</div>
+                  <div className="text-[10px] font-bold uppercase text-gray-400">Missed</div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                {[
+                  { icon: <Users size={20} />, label: 'Circle Settings', value: '7 Members' },
+                  { icon: <ChefHat size={20} />, label: 'Dietary Preference', value: user.foodType },
+                  { icon: <Truck size={20} />, label: 'Subscription', value: 'Active' },
+                  { icon: <MapIcon size={20} />, label: 'Saved Addresses', value: 'Home' },
+                ].map((item, i) => (
+                  <button key={i} className="w-full py-4 flex items-center justify-between group border-b border-gray-50 last:border-0">
+                    <div className="flex items-center gap-4">
+                      <div className="text-gray-400 group-hover:text-black transition-colors">
+                        {item.icon}
+                      </div>
+                      <div className="text-left">
+                        <div className="text-sm font-bold text-black">{item.label}</div>
+                        <div className="text-xs text-gray-400 font-medium">{item.value}</div>
+                      </div>
+                    </div>
+                    <ChevronRight size={18} className="text-gray-300" />
+                  </button>
+                ))}
+              </div>
+
+              <Button variant="outline" className="w-full py-4 rounded-xl border-gray-200 text-black hover:bg-gray-50 font-bold mt-8" onClick={() => navigate('landing')}>
+                Sign Out
+              </Button>
+            </>
+          )}
         </div>
 
-        <Button variant="outline" className="w-full py-4 rounded-xl border-gray-200 text-black hover:bg-gray-50 font-bold mt-8" onClick={() => navigate('landing')}>
-          Sign Out
-        </Button>
+        {/* Bottom Nav */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-4 flex items-center justify-around z-50">
+          <button onClick={() => navigate('dashboard')} className={cn("flex flex-col items-center gap-1", view === 'dashboard' ? "text-black" : "text-gray-400")}>
+            <Home size={24} />
+            <span className="text-[10px] font-bold">Home</span>
+          </button>
+          <button onClick={() => { setSearchQuery(''); navigate('dashboard'); }} className="flex flex-col items-center gap-1 text-gray-400">
+            <Search size={24} />
+            <span className="text-[10px] font-bold">Search</span>
+          </button>
+          <button onClick={() => navigate('schedule')} className={cn("flex flex-col items-center gap-1", view === 'schedule' ? "text-black" : "text-gray-400")}>
+            <Calendar size={24} />
+            <span className="text-[10px] font-bold">Schedule</span>
+          </button>
+          <button onClick={() => navigate('profile')} className={cn("flex flex-col items-center gap-1", view === 'profile' ? "text-black" : "text-gray-400")}>
+            <UserIcon size={24} />
+            <span className="text-[10px] font-bold">Account</span>
+          </button>
+        </div>
       </div>
-
-      {/* Bottom Nav */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-4 flex items-center justify-around z-50">
-        <button onClick={() => navigate('dashboard')} className="flex flex-col items-center gap-1 text-gray-400">
-          <Home size={24} />
-          <span className="text-[10px] font-bold">Home</span>
-        </button>
-        <button className="flex flex-col items-center gap-1 text-gray-400">
-          <Search size={24} />
-          <span className="text-[10px] font-bold">Search</span>
-        </button>
-        <button onClick={() => navigate('schedule')} className={cn("flex flex-col items-center gap-1", view === 'schedule' ? "text-black" : "text-gray-400")}>
-          <Calendar size={24} />
-          <span className="text-[10px] font-bold">Schedule</span>
-        </button>
-        <button onClick={() => navigate('profile')} className={cn("flex flex-col items-center gap-1", view === 'profile' ? "text-black" : "text-gray-400")}>
-          <UserIcon size={24} />
-          <span className="text-[10px] font-bold">Account</span>
-        </button>
-      </div>
-    </div>
-  );
+    );
+  };
 
   return (
-    <div className="max-w-md mx-auto min-h-screen relative shadow-2xl overflow-hidden">
+    <div className="max-w-md mx-auto min-h-screen relative shadow-2xl overflow-hidden bg-white">
       <AnimatePresence mode="wait">
-        {view === 'landing' && (
-          <motion.div key="landing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <LandingPage />
-          </motion.div>
-        )}
-        {view === 'onboarding' && (
-          <motion.div key="onboarding" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <Onboarding />
-          </motion.div>
-        )}
-        {view === 'matching' && (
-          <motion.div key="matching" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <MatchingScreen />
-          </motion.div>
-        )}
-        {view === 'dashboard' && (
-          <motion.div key="dashboard" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <Dashboard />
-          </motion.div>
-        )}
-        {view === 'delivery' && (
-          <motion.div key="delivery" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <DeliveryTracking />
-          </motion.div>
-        )}
-        {view === 'rating' && (
-          <motion.div key="rating" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <RatingScreen />
-          </motion.div>
-        )}
-        {view === 'schedule' && (
-          <motion.div key="schedule" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <ScheduleScreen />
-          </motion.div>
-        )}
-        {view === 'profile' && (
-          <motion.div key="profile" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <ProfileScreen />
-          </motion.div>
-        )}
-        {view === 'declare-menu' && (
-          <motion.div key="declare-menu" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <DeclareMenuScreen />
-          </motion.div>
-        )}
+        <motion.div
+          key={view}
+          initial={{ opacity: 0, x: 10 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -10 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          className="min-h-screen"
+        >
+          {view === 'landing' && <LandingPage />}
+          {view === 'onboarding' && <Onboarding />}
+          {view === 'matching' && <MatchingScreen />}
+          {view === 'dashboard' && <Dashboard />}
+          {view === 'delivery' && <DeliveryTracking />}
+          {view === 'rating' && <RatingScreen />}
+          {view === 'schedule' && <ScheduleScreen />}
+          {view === 'profile' && <ProfileScreen />}
+          {view === 'declare-menu' && <DeclareMenuScreen />}
+        </motion.div>
       </AnimatePresence>
     </div>
   );
