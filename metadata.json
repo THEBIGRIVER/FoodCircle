@@ -1,0 +1,5 @@
+{
+  "name": "FoodCircle",
+  "description": "A community-driven food sharing platform where neighbors cook for each other.",
+  "requestFramePermissions": ["geolocation"]
+}

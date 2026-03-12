@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #FF6B35;
+  --color-secondary: #F7C59F;
+  --color-background: #FFF8F0;
+  --color-accent: #EF476F;
+  --color-surface: #FFFFFF;
+  
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
+}
+
+body {
+  background-color: var(--color-background);
+  color: #2D3142;
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.bottom-nav-shadow {
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
