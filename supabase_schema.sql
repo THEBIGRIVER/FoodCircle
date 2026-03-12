@@ -5,9 +5,9 @@ CREATE TABLE profiles (
   id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
   full_name TEXT,
   pincode TEXT,
-  family_members INTEGER DEFAULT 1,
-  preference TEXT CHECK (preference IN ('Vegetarian', 'Non-vegetarian', 'Vegan')),
-  target_group_size INTEGER CHECK (target_group_size IN (7, 14, 21, 28, 35)),
+  family_size INTEGER DEFAULT 1,
+  food_type TEXT CHECK (food_type IN ('Vegetarian', 'Non-vegetarian', 'Vegan')),
+  group_size INTEGER CHECK (group_size IN (7, 14, 21, 28, 35)),
   average_rating DECIMAL(3,2) DEFAULT 5.0,
   onboarded BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
@@ -29,6 +29,9 @@ CREATE TABLE circle_members (
   circle_id UUID REFERENCES circles(id) ON DELETE CASCADE,
   profile_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
   member_index INTEGER NOT NULL, -- Position in the cooking rotation
+  is_flagged BOOLEAN DEFAULT FALSE,
+  consecutive_low_ratings INTEGER DEFAULT 0,
+  penalty_days INTEGER DEFAULT 0,
   joined_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
   PRIMARY KEY (circle_id, profile_id)
 );
@@ -40,7 +43,7 @@ CREATE TABLE meals (
   chef_id UUID REFERENCES profiles(id),
   meal_date DATE NOT NULL,
   menu TEXT,
-  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'cooking', 'picked-up', 'delivered')),
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'cooking', 'picked-up', 'delivered', 'missed')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
@@ -67,6 +70,24 @@ CREATE TABLE subscriptions (
   next_billing_date TIMESTAMP WITH TIME ZONE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
+
+-- 7. Meal Skips Table
+CREATE TABLE meal_skips (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  meal_id UUID REFERENCES meals(id) ON DELETE CASCADE,
+  profile_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+  UNIQUE(meal_id, profile_id)
+);
+
+ALTER TABLE meal_skips ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can skip their own meals" ON meal_skips FOR ALL
+USING (auth.uid() = profile_id);
+
+CREATE POLICY "Chefs can see skips for their meals" ON meal_skips FOR SELECT
+USING (EXISTS (SELECT 1 FROM meals WHERE id = meal_skips.meal_id AND chef_id = auth.uid()));
+
 
 -- --- Row Level Security (RLS) ---
 

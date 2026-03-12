@@ -13,7 +13,14 @@ import {
   CheckCircle2,
   AlertCircle,
   Plus,
-  ArrowLeft
+  ArrowLeft,
+  Settings,
+  Search,
+  ShoppingBag,
+  Clock,
+  Map as MapIcon,
+  ChevronRight,
+  MoreHorizontal
 } from 'lucide-react';
 import { cn } from './utils';
 import { User, Group, Meal, calculatePrice, FOOD_PREFERENCES, GROUP_SIZES } from './types';
@@ -22,21 +29,51 @@ import { format, addDays, isSameDay } from 'date-fns';
 // --- Mock Data Generators ---
 const MOCK_USER: User = {
   id: 'user_1',
-  name: 'Arijit Das',
+  name: 'John',
   pincode: '700001',
-  familyMembers: 4,
-  preference: 'Vegetarian',
+  familySize: 4,
+  foodType: 'Vegetarian',
   groupSize: 7,
   rating: 4.8,
-  onboarded: false,
+  onboarded: true,
 };
+
+const MOCK_DISHES = [
+  {
+    id: 'd1',
+    name: 'Lemon Herb Salmon Salad',
+    time: '25-35 min',
+    rating: '4.8 (120+)',
+    price: 'Free',
+    image: 'https://picsum.photos/seed/salad/600/400',
+    category: 'Healthy'
+  },
+  {
+    id: 'd2',
+    name: 'Delicious Pie With Chocolate',
+    time: '15-25 min',
+    rating: '4.9 (80+)',
+    price: 'Free',
+    image: 'https://picsum.photos/seed/pie/600/400',
+    category: 'Sweets'
+  },
+  {
+    id: 'd3',
+    name: 'Spicy Chicken Curry',
+    time: '30-45 min',
+    rating: '4.7 (200+)',
+    price: 'Free',
+    image: 'https://picsum.photos/seed/curry/600/400',
+    category: 'Main'
+  }
+];
 
 const MOCK_MEAL: Meal = {
   id: 'meal_1',
   circleId: 'group_1',
   chefId: 'member_3',
   date: new Date().toISOString(),
-  menu: 'Paneer Butter Masala, Jeera Rice & Dal Tadka',
+  menu: 'Delicious Pie With Chocolate',
   status: 'cooking',
 };
 
@@ -93,45 +130,52 @@ export default function App() {
   // --- Sub-Views ---
 
   const LandingPage = () => (
-    <div className="min-h-screen flex flex-col p-6 bg-background">
-      <div className="flex-1 flex flex-col items-center justify-center text-center space-y-8">
+    <div className="min-h-screen flex flex-col bg-white">
+      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
         <motion.div 
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="w-32 h-32 bg-primary rounded-full flex items-center justify-center shadow-2xl shadow-primary/30 animate-float"
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="mb-12"
         >
-          <ChefHat size={64} className="text-white" />
-        </motion.div>
-        
-        <div className="space-y-4">
-          <h1 className="text-5xl font-black tracking-tighter text-gray-900">
-            FoodCircle
+          <div className="w-24 h-24 bg-primary rounded-3xl flex items-center justify-center shadow-xl shadow-primary/20 mx-auto mb-8">
+            <ChefHat size={48} className="text-white" />
+          </div>
+          <h1 className="text-5xl font-bold tracking-tight text-black mb-4">
+            ChefCircle
           </h1>
-          <p className="text-lg text-gray-600 max-w-xs mx-auto">
-            Neighbors cooking for neighbors. Fresh, home-made, delivered.
+          <p className="text-xl text-gray-600 max-w-xs mx-auto font-medium">
+            share food share love
           </p>
-        </div>
+        </motion.div>
 
-        <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
-          <Card className="flex flex-col items-center p-4 space-y-2">
-            <Users className="text-primary" />
-            <span className="text-xs font-bold uppercase tracking-wider opacity-50">Circles</span>
-            <span className="text-xl font-black">1.2k+</span>
-          </Card>
-          <Card className="flex flex-col items-center p-4 space-y-2">
-            <Truck className="text-accent" />
-            <span className="text-xs font-bold uppercase tracking-wider opacity-50">Meals</span>
-            <span className="text-xl font-black">50k+</span>
-          </Card>
+        <div className="w-full max-w-sm space-y-4">
+          <div className="flex items-center gap-4 p-4 bg-surface rounded-2xl">
+            <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
+              <Users className="text-primary" size={24} />
+            </div>
+            <div className="text-left">
+              <div className="text-sm font-bold">Community Driven</div>
+              <div className="text-xs text-gray-500">1,200+ Active Circles</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-4 p-4 bg-surface rounded-2xl">
+            <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
+              <Truck className="text-primary" size={24} />
+            </div>
+            <div className="text-left">
+              <div className="text-sm font-bold">Daily Delivery</div>
+              <div className="text-xs text-gray-500">Fresh to your doorstep</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="pb-8 space-y-4">
-        <Button className="w-full py-5 text-xl" onClick={() => navigate('onboarding')}>
-          Get Started <ArrowRight size={20} />
+      <div className="p-8 space-y-4">
+        <Button className="w-full py-4 text-lg rounded-xl bg-black hover:bg-gray-900" onClick={() => navigate('onboarding')}>
+          Get Started
         </Button>
-        <p className="text-center text-sm text-gray-400">
-          Join the community of 5000+ home chefs
+        <p className="text-center text-sm text-gray-400 font-medium">
+          Eat healthy, support neighbors.
         </p>
       </div>
     </div>
@@ -142,121 +186,158 @@ export default function App() {
       {
         title: "Where do you live?",
         description: "We match you with neighbors in your area.",
-        component: (
-          <div className="space-y-4">
-            <div className="relative">
-              <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-              <input 
-                type="text" 
-                placeholder="Enter Pincode" 
-                className="w-full pl-12 pr-4 py-4 bg-gray-100 rounded-2xl focus:ring-2 focus:ring-primary outline-none text-lg font-medium"
-                value={user.pincode}
-                onChange={(e) => setUser({ ...user, pincode: e.target.value })}
-              />
-            </div>
-          </div>
-        )
+        id: "pincode"
       },
       {
         title: "Your Family",
         description: "How many members are we cooking for?",
-        component: (
-          <div className="grid grid-cols-4 gap-3">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
-              <button
-                key={num}
-                onClick={() => setUser({ ...user, familyMembers: num })}
-                className={cn(
-                  "py-4 rounded-2xl font-bold text-xl transition-all",
-                  user.familyMembers === num ? "bg-primary text-white" : "bg-gray-100 text-gray-600"
-                )}
-              >
-                {num}
-              </button>
-            ))}
-          </div>
-        )
+        id: "familySize"
       },
       {
         title: "Food Preference",
         description: "We'll match you with a group that shares your taste.",
-        component: (
-          <div className="space-y-3">
-            {FOOD_PREFERENCES.map(pref => (
-              <button
-                key={pref}
-                onClick={() => setUser({ ...user, preference: pref })}
-                className={cn(
-                  "w-full p-5 rounded-2xl font-bold text-left flex items-center justify-between transition-all",
-                  user.preference === pref ? "bg-primary text-white" : "bg-gray-100 text-gray-600"
-                )}
-              >
-                {pref}
-                {user.preference === pref && <CheckCircle2 size={20} />}
-              </button>
-            ))}
-          </div>
-        )
+        id: "foodType"
       },
       {
         title: "Circle Size",
         description: "Choose how many families you want in your circle.",
-        component: (
-          <div className="space-y-3">
-            {GROUP_SIZES.map(size => (
-              <button
-                key={size}
-                onClick={() => setUser({ ...user, groupSize: size })}
-                className={cn(
-                  "w-full p-5 rounded-2xl font-bold text-left flex items-center justify-between transition-all",
-                  user.groupSize === size ? "bg-primary text-white" : "bg-gray-100 text-gray-600"
-                )}
-              >
-                <div>
-                  <div className="text-lg">{size} Members</div>
-                  <div className={cn("text-xs opacity-60", user.groupSize === size ? "text-white" : "text-gray-500")}>
-                    Cook once every {size} days
-                  </div>
-                </div>
-                {user.groupSize === size && <CheckCircle2 size={20} />}
-              </button>
-            ))}
-          </div>
-        )
+        id: "groupSize"
       },
       {
         title: "Membership Plan",
         description: "Simple monthly subscription for logistics and matching.",
-        component: (
-          <Card className="bg-primary text-white space-y-6">
-            <div className="space-y-1">
-              <div className="text-sm font-bold uppercase tracking-widest opacity-70">Monthly Total</div>
-              <div className="text-5xl font-black">₹{calculatePrice(user.familyMembers, user.groupSize)}</div>
-            </div>
-            <div className="space-y-3 pt-4 border-t border-white/20">
-              <div className="flex justify-between text-sm">
-                <span>Family Members</span>
-                <span>{user.familyMembers}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span>Circle Size</span>
-                <span>{user.groupSize}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span>Base Rate</span>
-                <span>₹100 / member</span>
-              </div>
-            </div>
-          </Card>
-        )
+        id: "plan"
       }
     ];
 
+    const isStepValid = () => {
+      switch (onboardingStep) {
+        case 0: return user.pincode.length === 6;
+        case 1: return user.familySize > 0;
+        case 2: return !!user.foodType;
+        case 3: return !!user.groupSize;
+        default: return true;
+      }
+    };
+
     const handleNext = () => {
+      if (!isStepValid()) return;
       if (onboardingStep < steps.length - 1) {
         setOnboardingStep(onboardingStep + 1);
       } else {
         navigate('matching');
+      }
+    };
+
+    const renderStepContent = () => {
+      switch (onboardingStep) {
+        case 0:
+          return (
+            <div className="space-y-4">
+              <div className="relative">
+                <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                <input 
+                  type="text" 
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  placeholder="Enter 6-digit Pincode" 
+                  className="w-full pl-12 pr-4 py-4 bg-gray-100 rounded-2xl focus:ring-2 focus:ring-primary outline-none text-lg font-medium"
+                  value={user.pincode}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, '').slice(0, 6);
+                    setUser({ ...user, pincode: val });
+                  }}
+                  autoFocus
+                />
+              </div>
+              {user.pincode.length > 0 && user.pincode.length < 6 && (
+                <p className="text-xs text-primary font-medium px-2">Please enter a valid 6-digit pincode</p>
+              )}
+            </div>
+          );
+        case 1:
+          return (
+            <div className="grid grid-cols-4 gap-3">
+              {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
+                <button
+                  key={num}
+                  onClick={() => setUser({ ...user, familySize: num })}
+                  className={cn(
+                    "py-4 rounded-2xl font-bold text-xl transition-all",
+                    user.familySize === num ? "bg-primary text-white" : "bg-gray-100 text-gray-600"
+                  )}
+                >
+                  {num}
+                </button>
+              ))}
+            </div>
+          );
+        case 2:
+          return (
+            <div className="space-y-3">
+              {FOOD_PREFERENCES.map(pref => (
+                <button
+                  key={pref}
+                  onClick={() => setUser({ ...user, foodType: pref })}
+                  className={cn(
+                    "w-full p-5 rounded-2xl font-bold text-left flex items-center justify-between transition-all",
+                    user.foodType === pref ? "bg-primary text-white" : "bg-gray-100 text-gray-600"
+                  )}
+                >
+                  {pref}
+                  {user.foodType === pref && <CheckCircle2 size={20} />}
+                </button>
+              ))}
+            </div>
+          );
+        case 3:
+          return (
+            <div className="space-y-3">
+              {GROUP_SIZES.map(size => (
+                <button
+                  key={size}
+                  onClick={() => setUser({ ...user, groupSize: size })}
+                  className={cn(
+                    "w-full p-5 rounded-2xl font-bold text-left flex items-center justify-between transition-all",
+                    user.groupSize === size ? "bg-primary text-white" : "bg-gray-100 text-gray-600"
+                  )}
+                >
+                  <div>
+                    <div className="text-lg">{size} Members</div>
+                    <div className={cn("text-xs opacity-60", user.groupSize === size ? "text-white" : "text-gray-500")}>
+                      Cook once every {size} days
+                    </div>
+                  </div>
+                  {user.groupSize === size && <CheckCircle2 size={20} />}
+                </button>
+              ))}
+            </div>
+          );
+        case 4:
+          return (
+            <Card className="bg-primary text-white space-y-6">
+              <div className="space-y-1">
+                <div className="text-sm font-bold uppercase tracking-widest opacity-70">Monthly Total</div>
+                <div className="text-5xl font-black">₹{calculatePrice(user.familySize, user.groupSize)}</div>
+              </div>
+              <div className="space-y-3 pt-4 border-t border-white/20">
+                <div className="flex justify-between text-sm">
+                  <span>Family Members</span>
+                  <span>{user.familySize}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>Circle Size</span>
+                  <span>{user.groupSize}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>Base Rate</span>
+                  <span>₹100 / member</span>
+                </div>
+              </div>
+            </Card>
+          );
+        default:
+          return null;
       }
     };
 
@@ -282,12 +363,12 @@ export default function App() {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -20, opacity: 0 }}
           >
-            {steps[onboardingStep].component}
+            {renderStepContent()}
           </motion.div>
         </div>
 
         <div className="pt-8">
-          <Button className="w-full py-5" onClick={handleNext}>
+          <Button className="w-full py-5" onClick={handleNext} disabled={!isStepValid()}>
             {onboardingStep === steps.length - 1 ? 'Pay & Join Circle' : 'Continue'}
           </Button>
         </div>
@@ -323,234 +404,213 @@ export default function App() {
           ))}
         </div>
         <h2 className="text-3xl font-black mb-4">Finding your Circle...</h2>
-        <p className="opacity-80 max-w-xs">Matching you with neighbors in {user.pincode} with {user.preference} preference.</p>
+        <p className="opacity-80 max-w-xs">Matching you with neighbors in {user.pincode} with {user.foodType} preference.</p>
       </div>
     );
   };
 
   const Dashboard = () => (
-    <div className="min-h-screen pb-24 bg-background">
+    <div className="min-h-screen pb-32 bg-white">
       {/* Header */}
-      <div className="p-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-black text-gray-900 tracking-tight">Circle #829</h1>
-          <div className="flex items-center gap-1 text-sm text-gray-500 font-medium">
-            <MapPin size={14} /> {user.pincode} • {user.preference}
+      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md px-6 py-4 border-b border-gray-100">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <MapPin size={18} className="text-primary" />
+            <span className="font-bold text-sm">{user.pincode} • Now</span>
+            <ChevronRight size={16} className="text-gray-400" />
           </div>
+          <button className="w-10 h-10 bg-surface rounded-full flex items-center justify-center">
+            <ShoppingBag size={20} />
+          </button>
         </div>
-        <div className="w-12 h-12 rounded-2xl bg-secondary flex items-center justify-center text-primary font-bold">
-          AD
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+          <input 
+            type="text" 
+            placeholder="Search for dishes or circles" 
+            className="w-full pl-12 pr-4 py-3 bg-surface rounded-full text-sm font-medium focus:outline-none"
+          />
         </div>
       </div>
 
-      <div className="px-6 space-y-6">
-        {/* Today's Chef Card */}
-        <Card className="bg-gradient-to-br from-primary to-accent text-white border-none overflow-hidden relative">
-          <div className="relative z-10 space-y-4">
-            <div className="flex justify-between items-start">
-              <div className="px-3 py-1 bg-white/20 rounded-full text-[10px] font-bold uppercase tracking-widest">
-                Today's Chef
-              </div>
-              <div className="text-xs opacity-80">Cycle Day 3/7</div>
-            </div>
-            
-            <div className="space-y-1">
-              <h3 className="text-2xl font-black">Member #3</h3>
-              <p className="text-sm opacity-90 leading-relaxed">
-                {MOCK_MEAL.menu}
-              </p>
-            </div>
+      {/* Categories */}
+      <div className="flex gap-4 overflow-x-auto px-6 py-6 no-scrollbar">
+        {['All', 'Healthy', 'Sweets', 'Main', 'Breakfast', 'Vegan'].map((cat) => (
+          <button 
+            key={cat}
+            className={cn(
+              "px-6 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all",
+              cat === 'All' ? "bg-black text-white" : "bg-surface text-gray-600 hover:bg-gray-200"
+            )}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
 
-            <div className="flex items-center justify-between pt-2">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                  <Truck size={16} />
+      {/* Featured Dishes */}
+      <div className="px-6 space-y-8">
+        <div className="space-y-6">
+          {MOCK_DISHES.map((dish) => (
+            <motion.div
+              key={dish.id}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => navigate('delivery')}
+              className="space-y-3 cursor-pointer group"
+            >
+              <div className="relative aspect-[16/9] rounded-2xl overflow-hidden shadow-sm">
+                <img 
+                  src={dish.image} 
+                  alt={dish.name} 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                  referrerPolicy="no-referrer" 
+                />
+                <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">
+                  {dish.time}
                 </div>
-                <span className="text-sm font-bold">Out for delivery</span>
+                <button className="absolute bottom-4 right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg text-primary">
+                  <Plus size={20} />
+                </button>
               </div>
-              <Button 
-                variant="secondary" 
-                className="px-4 py-2 text-xs rounded-xl"
-                onClick={() => navigate('delivery')}
-              >
-                Track
-              </Button>
-            </div>
-          </div>
-          <ChefHat size={120} className="absolute -right-8 -bottom-8 opacity-10 rotate-12" />
-        </Card>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 gap-4">
-          <Card className="p-4 flex flex-col justify-between h-32">
-            <Calendar className="text-primary" size={20} />
-            <div>
-              <div className="text-[10px] font-bold uppercase opacity-50">Your Turn</div>
-              <div className="text-lg font-black">In 1 Day</div>
-            </div>
-          </Card>
-          <Card className="p-4 flex flex-col justify-between h-32">
-            <Star className="text-yellow-500" size={20} />
-            <div>
-              <div className="text-[10px] font-bold uppercase opacity-50">Chef Rating</div>
-              <div className="text-lg font-black">4.8 / 5.0</div>
-            </div>
-          </Card>
-        </div>
-
-        {/* Menu Declaration Reminder */}
-        {!isMenuDeclared && (
-          <Card className="bg-secondary/10 border-dashed border-2 border-secondary p-6 space-y-4">
-            <div className="flex items-center gap-3 text-primary">
-              <AlertCircle size={24} />
-              <h3 className="font-black">Menu Declaration Required</h3>
-            </div>
-            <p className="text-sm text-gray-600">
-              Your cooking turn is tomorrow! Please declare your menu today as per community rules.
-            </p>
-            <Button className="w-full" onClick={() => navigate('declare-menu')}>
-              Declare Menu Now
-            </Button>
-          </Card>
-        )}
-
-        {isMenuDeclared && (
-          <Card className="bg-green-50 border-green-100 p-6 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-green-100 flex items-center justify-center text-green-600">
-              <CheckCircle2 size={24} />
-            </div>
-            <div>
-              <div className="text-sm font-bold text-green-800">Menu Declared!</div>
-              <div className="text-xs text-green-600 truncate max-w-[200px]">{declaredMenu}</div>
-            </div>
-          </Card>
-        )}
-
-        {/* Menu Announcement */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="font-black text-gray-900">Announcements</h3>
-            <div className="w-2 h-2 rounded-full bg-accent animate-ping" />
-          </div>
-          <Card className="p-4 bg-secondary/20 border-secondary/30 flex gap-4">
-            <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center text-primary shrink-0">
-              <AlertCircle size={20} />
-            </div>
-            <div>
-              <div className="text-sm font-bold">Tomorrow's Menu</div>
-              <p className="text-xs text-gray-600">Member #4 will be cooking "Home-style Chicken Curry & Paratha". Get ready!</p>
-            </div>
-          </Card>
-        </div>
-
-        {/* Leaderboard Preview */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="font-black text-gray-900">Top Chefs</h3>
-            <button className="text-xs font-bold text-primary">View All</button>
-          </div>
-          <div className="space-y-3">
-            {[
-              { id: 5, name: 'Member #5', rating: 4.9, meals: 12 },
-              { id: 2, name: 'Member #2', rating: 4.8, meals: 15 },
-              { id: 1, name: 'Member #1', rating: 4.7, meals: 10 },
-            ].map((chef, i) => (
-              <div key={chef.id} className="flex items-center justify-between p-4 bg-white rounded-2xl border border-black/5">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-bold text-xs">
-                    {i + 1}
-                  </div>
-                  <div>
-                    <div className="text-sm font-bold">{chef.name}</div>
-                    <div className="text-[10px] text-gray-400">{chef.meals} Meals Shared</div>
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-lg font-bold text-black">{dish.name}</h3>
+                  <div className="flex items-center gap-2 text-sm text-gray-500 font-medium">
+                    <span className="text-black font-bold">★ {dish.rating}</span>
+                    <span>•</span>
+                    <span>{dish.category}</span>
+                    <span>•</span>
+                    <span className="text-primary font-bold">{dish.price}</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-1 text-sm font-black text-yellow-600">
-                  <Star size={12} fill="currentColor" /> {chef.rating}
-                </div>
               </div>
-            ))}
+            </motion.div>
+          ))}
+        </div>
+
+        {/* My Circle Section */}
+        <div className="pt-4 pb-8">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-bold">Your Circle</h3>
+            <button className="text-primary font-bold text-sm">View All</button>
           </div>
+          <Card className="bg-surface border-none p-4 flex items-center gap-4">
+            <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm">
+              <Users className="text-primary" size={32} />
+            </div>
+            <div className="flex-1">
+              <div className="font-bold">Circle #829</div>
+              <div className="text-sm text-gray-500">7 Members • Next turn in 3 days</div>
+            </div>
+            <ChevronRight className="text-gray-300" />
+          </Card>
         </div>
       </div>
 
       {/* Bottom Nav */}
-      <div className="fixed bottom-0 left-0 right-0 h-20 bg-white/80 backdrop-blur-lg border-t border-black/5 flex items-center justify-around px-6 bottom-nav-shadow z-50">
-        <button onClick={() => navigate('dashboard')} className={cn("p-2", view === 'dashboard' ? "text-primary" : "text-gray-400")}>
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-4 flex items-center justify-around z-50">
+        <button onClick={() => navigate('dashboard')} className={cn("flex flex-col items-center gap-1", view === 'dashboard' ? "text-black" : "text-gray-400")}>
           <Home size={24} />
+          <span className="text-[10px] font-bold">Home</span>
         </button>
-        <button onClick={() => navigate('schedule')} className={cn("p-2", view === 'schedule' ? "text-primary" : "text-gray-400")}>
+        <button className="flex flex-col items-center gap-1 text-gray-400">
+          <Search size={24} />
+          <span className="text-[10px] font-bold">Search</span>
+        </button>
+        <button onClick={() => navigate('schedule')} className={cn("flex flex-col items-center gap-1", view === 'schedule' ? "text-black" : "text-gray-400")}>
           <Calendar size={24} />
+          <span className="text-[10px] font-bold">Schedule</span>
         </button>
-        <div className="relative -top-6">
-          <button className="w-14 h-14 bg-primary rounded-2xl shadow-xl shadow-primary/30 flex items-center justify-center text-white">
-            <Plus size={28} />
-          </button>
-        </div>
-        <button onClick={() => navigate('rating')} className={cn("p-2", view === 'rating' ? "text-primary" : "text-gray-400")}>
-          <Star size={24} />
-        </button>
-        <button onClick={() => navigate('profile')} className={cn("p-2", view === 'profile' ? "text-primary" : "text-gray-400")}>
+        <button onClick={() => navigate('profile')} className={cn("flex flex-col items-center gap-1", view === 'profile' ? "text-black" : "text-gray-400")}>
           <UserIcon size={24} />
+          <span className="text-[10px] font-bold">Account</span>
         </button>
       </div>
     </div>
   );
 
   const DeliveryTracking = () => (
-    <div className="min-h-screen bg-background p-6 space-y-6">
-      <div className="flex items-center gap-4">
-        <button onClick={() => navigate('dashboard')} className="p-2 bg-white rounded-xl shadow-sm">
+    <div className="min-h-screen bg-white pb-12">
+      {/* Map Header */}
+      <div className="h-64 bg-gray-100 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://picsum.photos/seed/map/800/600')] bg-cover bg-center opacity-40 grayscale" />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="relative">
+            <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-lg animate-bounce">
+              <MapPin size={24} className="text-white" />
+            </div>
+            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-primary/20 rounded-full blur-sm" />
+          </div>
+        </div>
+        <button 
+          onClick={() => navigate('dashboard')}
+          className="absolute top-6 left-6 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg"
+        >
           <ArrowLeft size={20} />
         </button>
-        <h2 className="text-2xl font-black">Track Delivery</h2>
       </div>
 
-      <Card className="p-0 overflow-hidden h-64 relative bg-gray-200">
-        {/* Mock Map */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-full h-full bg-[url('https://picsum.photos/seed/map/800/600')] bg-cover opacity-50" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-            <motion.div 
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="text-primary"
-            >
-              <Truck size={40} fill="currentColor" />
-            </motion.div>
+      <div className="px-6 -mt-8 relative z-10">
+        <Card className="bg-white shadow-xl border-none p-6 rounded-3xl space-y-6">
+          <div className="flex justify-between items-start">
+            <div>
+              <h2 className="text-2xl font-bold mb-1">Arriving in 15 min</h2>
+              <p className="text-sm text-gray-500 font-medium">Your neighbor is preparing your meal</p>
+            </div>
+            <div className="w-12 h-12 bg-secondary rounded-2xl flex items-center justify-center text-primary">
+              <Clock size={24} />
+            </div>
           </div>
-        </div>
-      </Card>
 
-      <div className="space-y-6">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-secondary flex items-center justify-center text-primary">
-            <Truck size={24} />
+          {/* Stepper */}
+          <div className="flex items-center gap-2">
+            <div className="flex-1 h-2 bg-primary rounded-full" />
+            <div className="flex-1 h-2 bg-primary rounded-full" />
+            <div className="flex-1 h-2 bg-gray-100 rounded-full" />
+            <div className="flex-1 h-2 bg-gray-100 rounded-full" />
           </div>
-          <div>
-            <div className="text-lg font-black">Rider is 5 mins away</div>
-            <div className="text-sm text-gray-500">Delivering to Member #4 (Next stop: You)</div>
-          </div>
-        </div>
 
-        <div className="space-y-4">
-          {[
-            { time: '12:30 PM', status: 'Food picked up from Chef (Member #3)', done: true },
-            { time: '12:45 PM', status: 'Delivered to Member #1', done: true },
-            { time: '12:55 PM', status: 'Delivered to Member #2', done: true },
-            { time: '01:05 PM', status: 'Out for delivery to your location', done: false },
-          ].map((step, i) => (
-            <div key={i} className="flex gap-4">
-              <div className="flex flex-col items-center">
-                <div className={cn("w-3 h-3 rounded-full", step.done ? "bg-primary" : "bg-gray-200")} />
-                {i < 3 && <div className="w-0.5 h-full bg-gray-100" />}
-              </div>
-              <div className="pb-4">
-                <div className={cn("text-xs font-bold", step.done ? "text-primary" : "text-gray-400")}>{step.time}</div>
-                <div className={cn("text-sm", step.done ? "text-gray-900 font-medium" : "text-gray-400")}>{step.status}</div>
+          <div className="flex items-center gap-4 pt-4 border-t border-gray-50">
+            <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white shadow-md">
+              <img src="https://picsum.photos/seed/chef/100" alt="Chef" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+            </div>
+            <div className="flex-1">
+              <div className="text-xs text-gray-400 font-bold uppercase">Your Chef</div>
+              <div className="font-bold">Lidia Bastianich</div>
+              <div className="flex items-center gap-1 text-xs text-yellow-500 font-bold">
+                <Star size={12} fill="currentColor" /> 4.9 (240 reviews)
               </div>
             </div>
-          ))}
+            <button className="w-10 h-10 bg-surface rounded-full flex items-center justify-center">
+              <ShoppingBag size={20} />
+            </button>
+          </div>
+        </Card>
+
+        {/* Order Details */}
+        <div className="mt-8 space-y-6">
+          <h3 className="text-xl font-bold">Order Details</h3>
+          <div className="flex items-center gap-4">
+            <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-sm">
+              <img src="https://picsum.photos/seed/pie/200" alt="Pie" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+            </div>
+            <div className="flex-1">
+              <div className="font-bold">Delicious Pie With Chocolate</div>
+              <div className="text-sm text-gray-500">1x Large Portion</div>
+              <div className="text-primary font-bold text-sm mt-1">Free • Circle Member</div>
+            </div>
+          </div>
+          
+          <div className="space-y-4 pt-4 border-t border-gray-100">
+            <div className="flex justify-between text-sm font-medium">
+              <span className="text-gray-500">Delivery Address</span>
+              <span className="text-black">123 Neighbor St, {user.pincode}</span>
+            </div>
+            <div className="flex justify-between text-sm font-medium">
+              <span className="text-gray-500">Order Number</span>
+              <span className="text-black">#FC-9283</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -560,29 +620,32 @@ export default function App() {
     const [ratings, setRatings] = useState({ taste: 0, hygiene: 0, portion: 0 });
 
     return (
-      <div className="min-h-screen bg-background p-6 flex flex-col">
-        <div className="flex-1 space-y-8">
-          <div className="text-center space-y-2">
-            <h2 className="text-3xl font-black">Rate Today's Meal</h2>
-            <p className="text-gray-500">Your feedback helps Member #3 improve!</p>
+      <div className="min-h-screen bg-white p-6 flex flex-col">
+        <div className="flex-1 space-y-12 pt-8">
+          <div className="text-center space-y-4">
+            <div className="w-20 h-20 bg-secondary rounded-3xl flex items-center justify-center text-primary mx-auto">
+              <Star size={40} fill="currentColor" />
+            </div>
+            <h2 className="text-3xl font-bold">Rate the meal</h2>
+            <p className="text-gray-500 font-medium">How was the food from Circle #829?</p>
           </div>
 
-          <Card className="space-y-8">
+          <div className="space-y-10">
             {['taste', 'hygiene', 'portion'].map((category) => (
-              <div key={category} className="space-y-3">
-                <div className="text-sm font-bold uppercase tracking-widest opacity-50 text-center">{category}</div>
-                <div className="flex justify-center gap-2">
+              <div key={category} className="space-y-4">
+                <div className="text-xs font-bold uppercase tracking-widest text-gray-400 text-center">{category}</div>
+                <div className="flex justify-center gap-3">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button 
                       key={star}
                       onClick={() => setRatings({ ...ratings, [category]: star })}
-                      className="p-1"
+                      className="transition-transform active:scale-90"
                     >
                       <Star 
-                        size={32} 
+                        size={36} 
                         className={cn(
                           "transition-all",
-                          ratings[category as keyof typeof ratings] >= star ? "text-yellow-500 fill-yellow-500" : "text-gray-200"
+                          ratings[category as keyof typeof ratings] >= star ? "text-primary fill-primary" : "text-gray-100"
                         )} 
                       />
                     </button>
@@ -590,19 +653,12 @@ export default function App() {
                 </div>
               </div>
             ))}
-          </Card>
-
-          <div className="bg-accent/10 p-4 rounded-2xl flex gap-3 text-accent">
-            <AlertCircle className="shrink-0" />
-            <p className="text-xs font-medium leading-relaxed">
-              Low ratings (below 20% average) result in chef warnings. Please be honest and fair.
-            </p>
           </div>
         </div>
 
-        <div className="pt-8">
-          <Button className="w-full py-5" onClick={() => navigate('dashboard')}>
-            Submit Review
+        <div className="pb-8">
+          <Button className="w-full py-4 text-lg bg-black hover:bg-gray-900 rounded-xl" onClick={() => navigate('dashboard')}>
+            Submit Feedback
           </Button>
         </div>
       </div>
@@ -663,71 +719,110 @@ export default function App() {
   };
 
   const ScheduleScreen = () => {
-    const today = new Date();
-    const schedule = Array.from({ length: 14 }).map((_, i) => {
-      const date = addDays(today, i - 2);
-      const isUser = (i % 7) + 1 === 4;
-      const isTomorrow = i === 3; // Today is i=2, Tomorrow is i=3
-      
-      return {
-        date,
-        chef: `Member #${(i % 7) + 1}`,
-        isUser,
-        menu: isUser && isMenuDeclared ? declaredMenu : (i === 2 ? MOCK_MEAL.menu : 'Menu will be announced soon')
-      };
-    });
+    const [selectedDay, setSelectedDay] = useState(new Date().getDate());
+    const weekDays = [
+      { day: 'Mon', date: 10 },
+      { day: 'Tue', date: 11 },
+      { day: 'Wed', date: 12 },
+      { day: 'Thu', date: 13 },
+      { day: 'Fri', date: 14 },
+      { day: 'Sat', date: 15 },
+      { day: 'Sun', date: 16 },
+    ];
 
     return (
-      <div className="min-h-screen bg-background pb-24">
-        <div className="p-6">
-          <h2 className="text-3xl font-black mb-6">Cooking Schedule</h2>
-          <div className="space-y-4">
-            {schedule.map((item, i) => (
-              <div 
-                key={i} 
+      <div className="min-h-screen bg-white pb-32">
+        {/* Calendar Header */}
+        <div className="px-6 pt-8 pb-6 border-b border-gray-100">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-bold">March 2026</h2>
+            <div className="flex gap-2">
+              <button className="w-10 h-10 bg-surface rounded-full flex items-center justify-center">
+                <Search size={20} />
+              </button>
+              <button className="w-10 h-10 bg-black rounded-full flex items-center justify-center text-white">
+                <Plus size={20} />
+              </button>
+            </div>
+          </div>
+
+          <div className="flex justify-between">
+            {weekDays.map((d) => (
+              <button 
+                key={d.date}
+                onClick={() => setSelectedDay(d.date)}
                 className={cn(
-                  "p-4 rounded-3xl flex items-center gap-4 border transition-all",
-                  isSameDay(item.date, today) ? "bg-primary text-white border-primary shadow-lg shadow-primary/20" : "bg-white border-black/5",
-                  item.isUser && !isSameDay(item.date, today) ? "border-primary/30 bg-primary/5" : ""
+                  "flex flex-col items-center gap-2 p-2 rounded-2xl transition-all w-12",
+                  selectedDay === d.date ? "bg-black text-white shadow-lg" : "text-gray-400 hover:bg-gray-50"
                 )}
               >
-                <div className="text-center w-12 shrink-0">
-                  <div className="text-[10px] font-bold uppercase opacity-60">{format(item.date, 'EEE')}</div>
-                  <div className="text-xl font-black">{format(item.date, 'dd')}</div>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold">{item.isUser ? 'Your Turn' : item.chef}</span>
-                    {item.isUser && <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />}
-                  </div>
-                  <div className="text-xs opacity-70 truncate max-w-[200px]">{item.menu}</div>
-                </div>
-                {isSameDay(item.date, today) && (
-                  <div className="px-3 py-1 bg-white/20 rounded-full text-[10px] font-bold uppercase">Today</div>
-                )}
-              </div>
+                <span className="text-[10px] font-bold uppercase">{d.day}</span>
+                <span className="text-lg font-bold">{d.date}</span>
+              </button>
             ))}
           </div>
         </div>
 
-        {/* Bottom Nav */}
-        <div className="fixed bottom-0 left-0 right-0 h-20 bg-white/80 backdrop-blur-lg border-t border-black/5 flex items-center justify-around px-6 bottom-nav-shadow z-50">
-          <button onClick={() => navigate('dashboard')} className="p-2 text-gray-400">
-            <Home size={24} />
-          </button>
-          <button onClick={() => navigate('schedule')} className="p-2 text-primary">
-            <Calendar size={24} />
-          </button>
-          <div className="relative -top-6">
-            <button className="w-14 h-14 bg-primary rounded-2xl shadow-xl shadow-primary/30 flex items-center justify-center text-white">
-              <Plus size={28} />
-            </button>
+        {/* Timeline */}
+        <div className="px-6 py-8 space-y-8">
+          <div className="flex gap-6">
+            <div className="w-12 text-right">
+              <div className="text-sm font-bold">12:00</div>
+              <div className="text-[10px] text-gray-400 font-bold uppercase">PM</div>
+            </div>
+            <div className="flex-1 relative">
+              <div className="absolute left-0 top-2 bottom-0 w-px bg-gray-100" />
+              <Card className="bg-secondary/30 border-l-4 border-primary p-4 rounded-2xl ml-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="font-bold text-sm">Lunch Delivery</div>
+                  <div className="text-[10px] font-bold text-primary uppercase">Active</div>
+                </div>
+                <div className="text-xs text-gray-600 mb-3">Lemon Herb Salmon Salad</div>
+                <div className="flex -space-x-2">
+                  {[1, 2, 3].map(i => (
+                    <img key={i} src={`https://picsum.photos/seed/${i}/40`} className="w-6 h-6 rounded-full border-2 border-white" alt="Member" referrerPolicy="no-referrer" />
+                  ))}
+                  <div className="w-6 h-6 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center text-[8px] font-bold">+4</div>
+                </div>
+              </Card>
+            </div>
           </div>
-          <button onClick={() => navigate('rating')} className="p-2 text-gray-400">
-            <Star size={24} />
+
+          <div className="flex gap-6">
+            <div className="w-12 text-right">
+              <div className="text-sm font-bold">07:00</div>
+              <div className="text-[10px] text-gray-400 font-bold uppercase">PM</div>
+            </div>
+            <div className="flex-1 relative">
+              <div className="absolute left-0 top-2 bottom-0 w-px bg-gray-100" />
+              <Card className="bg-surface p-4 rounded-2xl ml-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="font-bold text-sm">Your Cooking Turn</div>
+                  <Clock size={14} className="text-gray-400" />
+                </div>
+                <div className="text-xs text-gray-600">Prepare Dinner for Circle #829</div>
+              </Card>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Nav */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-4 flex items-center justify-around z-50">
+          <button onClick={() => navigate('dashboard')} className="flex flex-col items-center gap-1 text-gray-400">
+            <Home size={24} />
+            <span className="text-[10px] font-bold">Home</span>
           </button>
-          <button onClick={() => navigate('profile')} className="p-2 text-gray-400">
+          <button className="flex flex-col items-center gap-1 text-gray-400">
+            <Search size={24} />
+            <span className="text-[10px] font-bold">Search</span>
+          </button>
+          <button onClick={() => navigate('schedule')} className={cn("flex flex-col items-center gap-1", view === 'schedule' ? "text-black" : "text-gray-400")}>
+            <Calendar size={24} />
+            <span className="text-[10px] font-bold">Schedule</span>
+          </button>
+          <button onClick={() => navigate('profile')} className={cn("flex flex-col items-center gap-1", view === 'profile' ? "text-black" : "text-gray-400")}>
             <UserIcon size={24} />
+            <span className="text-[10px] font-bold">Account</span>
           </button>
         </div>
       </div>
@@ -735,76 +830,85 @@ export default function App() {
   };
 
   const ProfileScreen = () => (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen bg-white pb-32">
       <div className="p-6 space-y-8">
-        <div className="flex flex-col items-center text-center space-y-4">
-          <div className="w-24 h-24 rounded-3xl bg-primary flex items-center justify-center text-white text-3xl font-black shadow-xl shadow-primary/20">
-            AD
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold">Account</h2>
+          <button className="w-10 h-10 bg-surface rounded-full flex items-center justify-center">
+            <Settings size={20} />
+          </button>
+        </div>
+
+        <div className="flex items-center gap-4 pb-8 border-b border-gray-100">
+          <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-gray-100 shadow-sm">
+            <img src="https://picsum.photos/seed/john/200" alt="Profile" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
           </div>
           <div>
-            <h2 className="text-2xl font-black">{user.name}</h2>
-            <p className="text-gray-500">Circle #829 • {user.pincode}</p>
+            <h2 className="text-2xl font-bold text-black">{user.name}</h2>
+            <p className="text-sm text-gray-500 font-medium">Circle #829 • {user.pincode}</p>
+            <button className="text-primary text-sm font-bold mt-1">Edit Profile</button>
           </div>
         </div>
 
         <div className="grid grid-cols-3 gap-4">
-          <div className="text-center p-4 bg-white rounded-2xl border border-black/5">
-            <div className="text-xl font-black">12</div>
-            <div className="text-[10px] font-bold uppercase opacity-50">Meals</div>
+          <div className="text-center p-4 bg-surface rounded-2xl">
+            <div className="text-xl font-bold">12</div>
+            <div className="text-[10px] font-bold uppercase text-gray-400">Meals</div>
           </div>
-          <div className="text-center p-4 bg-white rounded-2xl border border-black/5">
-            <div className="text-xl font-black">4.8</div>
-            <div className="text-[10px] font-bold uppercase opacity-50">Rating</div>
+          <div className="text-center p-4 bg-surface rounded-2xl">
+            <div className="text-xl font-bold">4.8</div>
+            <div className="text-[10px] font-bold uppercase text-gray-400">Rating</div>
           </div>
-          <div className="text-center p-4 bg-white rounded-2xl border border-black/5">
-            <div className="text-xl font-black">0</div>
-            <div className="text-[10px] font-bold uppercase opacity-50">Missed</div>
+          <div className="text-center p-4 bg-surface rounded-2xl">
+            <div className="text-xl font-bold">0</div>
+            <div className="text-[10px] font-bold uppercase text-gray-400">Missed</div>
           </div>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-2">
           {[
             { icon: <Users size={20} />, label: 'Circle Settings', value: '7 Members' },
-            { icon: <MapPin size={20} />, label: 'Delivery Address', value: 'Hidden for Privacy' },
-            { icon: <ChefHat size={20} />, label: 'Dietary Preference', value: user.preference },
+            { icon: <ChefHat size={20} />, label: 'Dietary Preference', value: user.foodType },
             { icon: <Truck size={20} />, label: 'Subscription', value: 'Active' },
+            { icon: <MapIcon size={20} />, label: 'Saved Addresses', value: 'Home' },
           ].map((item, i) => (
-            <button key={i} className="w-full p-5 bg-white rounded-2xl border border-black/5 flex items-center justify-between">
+            <button key={i} className="w-full py-4 flex items-center justify-between group border-b border-gray-50 last:border-0">
               <div className="flex items-center gap-4">
-                <div className="text-primary">{item.icon}</div>
+                <div className="text-gray-400 group-hover:text-black transition-colors">
+                  {item.icon}
+                </div>
                 <div className="text-left">
-                  <div className="text-xs font-bold uppercase opacity-40">{item.label}</div>
-                  <div className="font-bold">{item.value}</div>
+                  <div className="text-sm font-bold text-black">{item.label}</div>
+                  <div className="text-xs text-gray-400 font-medium">{item.value}</div>
                 </div>
               </div>
-              <ArrowRight size={16} className="text-gray-300" />
+              <ChevronRight size={18} className="text-gray-300" />
             </button>
           ))}
         </div>
 
-        <Button variant="outline" className="w-full border-accent text-accent hover:bg-accent/5" onClick={() => navigate('landing')}>
-          Logout
+        <Button variant="outline" className="w-full py-4 rounded-xl border-gray-200 text-black hover:bg-gray-50 font-bold mt-8" onClick={() => navigate('landing')}>
+          Sign Out
         </Button>
       </div>
 
       {/* Bottom Nav */}
-      <div className="fixed bottom-0 left-0 right-0 h-20 bg-white/80 backdrop-blur-lg border-t border-black/5 flex items-center justify-around px-6 bottom-nav-shadow z-50">
-        <button onClick={() => navigate('dashboard')} className="p-2 text-gray-400">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-4 flex items-center justify-around z-50">
+        <button onClick={() => navigate('dashboard')} className="flex flex-col items-center gap-1 text-gray-400">
           <Home size={24} />
+          <span className="text-[10px] font-bold">Home</span>
         </button>
-        <button onClick={() => navigate('schedule')} className="p-2 text-gray-400">
+        <button className="flex flex-col items-center gap-1 text-gray-400">
+          <Search size={24} />
+          <span className="text-[10px] font-bold">Search</span>
+        </button>
+        <button onClick={() => navigate('schedule')} className={cn("flex flex-col items-center gap-1", view === 'schedule' ? "text-black" : "text-gray-400")}>
           <Calendar size={24} />
+          <span className="text-[10px] font-bold">Schedule</span>
         </button>
-        <div className="relative -top-6">
-          <button className="w-14 h-14 bg-primary rounded-2xl shadow-xl shadow-primary/30 flex items-center justify-center text-white">
-            <Plus size={28} />
-          </button>
-        </div>
-        <button onClick={() => navigate('rating')} className="p-2 text-gray-400">
-          <Star size={24} />
-        </button>
-        <button onClick={() => navigate('profile')} className="p-2 text-primary">
+        <button onClick={() => navigate('profile')} className={cn("flex flex-col items-center gap-1", view === 'profile' ? "text-black" : "text-gray-400")}>
           <UserIcon size={24} />
+          <span className="text-[10px] font-bold">Account</span>
         </button>
       </div>
     </div>
